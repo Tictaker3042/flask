@@ -1,19 +1,43 @@
-from flask import Flask
+from flask import Flask, render_template, request, url_for, redirect
+
+
+class User:
+
+    def __init__(self, login, password):
+        self.login = login
+        self.password = password
+
 
 app = Flask(__name__)
 
+users = []
+
+
 @app.route('/')
-@app.route('/index')
 def index():
-    return "Hello world"
+    return render_template("index.html")
 
 
+@app.route('/user/create', methods=['POST'])
+def create_user():
+    login = request.form['login']
+    password = request.form['password']
+    users.append(
+        User(login, password)
+    )
+    return redirect(url_for('index'))
 
 
+@app.route('/user/<int:user_id>')
+def get_user(user_id):
+    print(users[user_id].__dict__)
+    return users[user_id].__dict__
+
+
+@app.route('/users')
+def get_users():
+    return [i.__dict__ for i in users]
 
 
 if __name__ == "__main__":
     app.run()
-
-
-
